@@ -1,35 +1,47 @@
-// console.log("Starting a new project");
-
 const express = require('express');
 
 const app = express();
 
-// app.use((req, res)=>{
-//     res.send("Hello from server!!!!")
+// will match /user, /user/xyz, /user/1
+// app.get('/user',(req,res)=>{
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
 // })
 
-// app.use('/user',(req,res)=>{
-//     res.send("HAHAAHAHHAHAHHA")
+//work for /ac,/abc
+// app.get('/ab?c',(req,res)=>{
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
 // })
 
-app.get('/user',(req,res)=>{
+
+// app.get('/ab+c',(req,res)=>{
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
+// })
+
+// app.get('/ab*cd',(req,res)=>{
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
+// })
+// app.get('/a(bc)?d',(req,res)=>{
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
+// })
+
+//regex
+// app.get(/a/,(req,res)=>{
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
+// })
+// app.get(/.*fly$/,(req,res)=>{
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
+// })
+// app.get('/user',(req,res)=>{
+//     console.log(req.query);
+    
+//     res.send({firstName: "Shakti", lastName: "Sahoo"})
+// })
+app.get('/user/:userId/:name/:password',(req,res)=>{
+    // console.log(req.query);
+    console.log(req.params);
+    
     res.send({firstName: "Shakti", lastName: "Sahoo"})
 })
-
-app.post('/user',async (req,res)=>{
-    console.log("Save Data to DB");
-    res.send("Data successfully send to DB")
-    
-})
-
-app.delete('/user',(req,res)=>{
-    res.send("User deleted from DB ")
-})
-
-app.use("/test",(req,res)=>{
-    res.send("Hi test route")
-})
-
 
 app.listen(7777,()=>{
     console.log("Server is successfully listening on Port 7777...");
