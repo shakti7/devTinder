@@ -8,17 +8,30 @@ const app = express();
 //     res.send("Hello from server!!!!")
 // })
 
-app.use("/",(req,res)=>{
-    res.send("Home yo")
+// app.use('/user',(req,res)=>{
+//     res.send("HAHAAHAHHAHAHHA")
+// })
+
+app.get('/user',(req,res)=>{
+    res.send({firstName: "Shakti", lastName: "Sahoo"})
 })
+
+app.post('/user',async (req,res)=>{
+    console.log("Save Data to DB");
+    res.send("Data successfully send to DB")
+    
+})
+
+app.delete('/user',(req,res)=>{
+    res.send("User deleted from DB ")
+})
+
 app.use("/test",(req,res)=>{
     res.send("Hi test route")
 })
-app.use("/hello",(req,res)=>{
-    res.send("Hello route")
-})
+
 
 app.listen(7777,()=>{
-    console.log("Server is successfully listening on Port 3000...");
+    console.log("Server is successfully listening on Port 7777...");
     
 });
