@@ -1,21 +1,16 @@
 const express = require('express');
+const {adminAuth,userAuth} =require('./middlewares/auth')
 
 const app = express();
 
 // I want to write all the middlewares coming to /admin. So I am placing /admin on top
 // Handles auth middleware for all type of request (get,put,post,patch,del) 
 // we can only use for get/put/post/patch/del separately
-app.use('/admin',(req,res,next)=>{
+app.use('/admin',adminAuth )
 
-    const token= 'xyz'; //request.body.token;
-    const isAdminAuthorized = token === 'xyz'
-
-    if(isAdminAuthorized){
-        next();
-    }else{
-        res.status(401).send("Unauthorized req")
-    }
- 
+//since I have single route for user I can write in the below way
+app.get('/user',userAuth ,(req,res)=>{
+    res.send("User Data Sent")
 })
 
 app.get('/admin/getAllData',(req,res)=>{
