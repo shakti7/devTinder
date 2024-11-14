@@ -3,28 +3,29 @@ const express = require('express');
 const app = express();
 
 
-app.use('/',(req,res,next)=>{
-    next()
-    // res.send("Handling / route")
-})
+app.get('/admin/getAllData',(req,res)=>{
+    // Logic of checking if the data is authorized 
+    const token= 'xy'; //request.body.token;
+    const isAdminAuthorized = token === 'xyz'
+    if(isAdminAuthorized){
 
-// app.use('/test/:user',(req,res)=>{
-//     console.log(req.params);
-//     res.send("Hi")
-// })
+        res.send("All data sent")
+    }else{
+        res.status(401).send("Unauthorized req")
+    }
 
-app.use('/lunch',(req,res,next)=>{
-    console.log("handling lunch router");
-    res.send("lunch")
 })
-app.use('/user',( req,res,next)=>{
-    console.log('Handling the route user ');
-    next()
-}
-)
-app.use('/user',(req,res,next)=>{
-    console.log("handling 2nd router");
-    res.send("2nd Route")
+app.get('/admin/deleteUser',(req,res)=>{
+    // Logic of checking if the data is authorized 
+
+    const token= 'xy'; //request.body.token;
+    const isAdminAuthorized = token === 'xyz'
+    if(isAdminAuthorized){
+
+        res.send("Deleted the User")
+    }else{
+        res.status(401).send("Unauthorized req")
+    }
 })
 
 app.listen(7777,()=>{
