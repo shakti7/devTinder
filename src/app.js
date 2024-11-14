@@ -2,30 +2,31 @@ const express = require('express');
 
 const app = express();
 
+// I want to write all the middlewares coming to /admin. So I am placing /admin on top
+// Handles auth middleware for all type of request (get,put,post,patch,del) 
+// we can only use for get/put/post/patch/del separately
+app.use('/admin',(req,res,next)=>{
 
-app.get('/admin/getAllData',(req,res)=>{
-    // Logic of checking if the data is authorized 
-    const token= 'xy'; //request.body.token;
+    const token= 'xyz'; //request.body.token;
     const isAdminAuthorized = token === 'xyz'
-    if(isAdminAuthorized){
 
-        res.send("All data sent")
+    if(isAdminAuthorized){
+        next();
     }else{
         res.status(401).send("Unauthorized req")
     }
+ 
+})
+
+app.get('/admin/getAllData',(req,res)=>{
+    // Logic of checking if the data is authorized 
+    
+    res.send("All data sent")
 
 })
 app.get('/admin/deleteUser',(req,res)=>{
     // Logic of checking if the data is authorized 
-
-    const token= 'xy'; //request.body.token;
-    const isAdminAuthorized = token === 'xyz'
-    if(isAdminAuthorized){
-
-        res.send("Deleted the User")
-    }else{
-        res.status(401).send("Unauthorized req")
-    }
+    res.send('Deleted this user')
 })
 
 app.listen(7777,()=>{
