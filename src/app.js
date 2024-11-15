@@ -1,28 +1,29 @@
 const express = require('express');
-const {adminAuth,userAuth} =require('./middlewares/auth')
 
 const app = express();
 
-// I want to write all the middlewares coming to /admin. So I am placing /admin on top
-// Handles auth middleware for all type of request (get,put,post,patch,del) 
-// we can only use for get/put/post/patch/del separately
-app.use('/admin',adminAuth )
+app.get('/getUserData',(req,res)=>{
+    //Logic of DB call and get user data 
+    //what if there is some error in the code
 
-//since I have single route for user I can write in the below way
-app.get('/user',userAuth ,(req,res)=>{
+    throw new Error("Error in code");
+    
     res.send("User Data Sent")
 })
 
-app.get('/admin/getAllData',(req,res)=>{
-    // Logic of checking if the data is authorized 
-    
-    res.send("All data sent")
+app.use('/deleteUserData',(req,res,next)=>{
+    throw new Error("YO yo");
+    // res.send("User Data Deleted")
+})
+app.use('/',(error, req,res,next)=>{
+    if(error){
+        console.log(error.stack);
+        
+        res.status(500).send("Something went wrong")
+    }
+})
 
-})
-app.get('/admin/deleteUser',(req,res)=>{
-    // Logic of checking if the data is authorized 
-    res.send('Deleted this user')
-})
+
 
 app.listen(7777,()=>{
     console.log("Server is successfully listening on Port 7777...");
