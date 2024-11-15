@@ -8,11 +8,3 @@ const connectDB = async ()=>{
 }
 
 module.exports = { connectDB }
-
-connectDB().then(()=>{
-    console.log("DB connection established successfully.....");
-    
-}).catch((err) =>{
-    console.error("Database connection can not be established!!! \n",err.message);
-    
-})
