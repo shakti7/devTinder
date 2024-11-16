@@ -34,6 +34,31 @@ app.post('/signup',async(req,res)=>{
     }
 })
 
+app.get('/user',async(req,res)=>{
+    const email =req.body.emailId
+
+    try {
+        
+        // await Adventure.findOne({ country: 'Croatia' }).exec();
+        //users is an array
+        const users =  await User.find({emailId: email}).exec()
+        //If you query for something that is not there
+        if(users.length === 0){
+            res.status(404).send("User not found")
+        }else{
+            res.send(users)
+        }
+        
+    } catch (error) {
+        console.error("Error in finding data in DB: ",error.message);
+        res.send("Error in finding data in DB: "+error.message)
+    }
+})
+
+app.get('/feed',async(req,res)=>{
+
+})
+
 connectDB().then(()=>{
     console.log("DB connection established successfully.....");
     app.listen(7777,()=>{
