@@ -57,6 +57,21 @@ app.get('/user',async(req,res)=>{
 
 app.get('/feed',async(req,res)=>{
 
+    try {
+        const users= await User.find({})
+        // for testing the if block make sure to change const to let
+        // users=[]
+        if(users.length === 0 ){
+            res.status(404).send("No user found in your area")
+        }else{
+            res.send(users)
+        }
+    } catch (error) {
+        console.error(error);
+        
+        res.send("Error in finding data in DB")
+    }
+
 })
 
 connectDB().then(()=>{
