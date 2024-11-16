@@ -38,16 +38,32 @@ app.get('/user',async(req,res)=>{
     const email =req.body.emailId
 
     try {
+        // To find one user & this does not return an array
+        // finds the 1st doc found as per entry by default but it can be modified using sort
+        // const user = await User.findOne({emailId: email})
+        const user = await User.findOne({emailId: email},'firstName lastName')
+        // const user = await User.findOne({})
+        // user={}
+        console.log(user);
+        console.log(user === null);
         
-        // await Adventure.findOne({ country: 'Croatia' }).exec();
-        //users is an array
-        const users =  await User.find({emailId: email}).exec()
-        //If you query for something that is not there
-        if(users.length === 0){
+        // console.log(Object.keys(user).length);
+        
+        if(!user || Object.keys(user).length === 0){
             res.status(404).send("User not found")
         }else{
-            res.send(users)
+            res.send(user)
         }
+        
+        // // await Adventure.findOne({ country: 'Croatia' }).exec();
+        // //users is an array
+        // const users =  await User.find({emailId: email}).exec()
+        // //If you query for something that is not there
+        // if(users.length === 0){
+        //     res.status(404).send("User not found")
+        // }else{
+        //     res.send(users)
+        // }
         
     } catch (error) {
         console.error("Error in finding data in DB: ",error.message);
