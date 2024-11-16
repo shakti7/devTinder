@@ -4,28 +4,28 @@ const mongoose = require('mongoose');
 const User = require('./models/user')
 const app = express();
 
+//gets activated for all my Routes
+app.use(express.json())
 
-// Create an ObjectId
-// const id = new mongoose.Types.ObjectId("609269995b2e888426d019ef");
-
-// // Validate the ObjectId
-// console.log(mongoose.Types.ObjectId.isValid(id))
 // POST API to signup user
 app.post('/signup',async(req,res)=>{
-    const userObj = {
-        firstName: "Sachin",
-        lastName: "Tendulkar",
-        emailId: "sachin@tendulkar.com",
-        password: "sachin@123",
-    }
+    console.log(req.body);
+    
+    //now req.body is exactly same as userObj
+    // const userObj = {
+    //     firstName: "Sachin",
+    //     lastName: "Tendulkar",
+    //     emailId: "sachin@tendulkar.com",
+    //     password: "sachin@123",
+    // }
 
     //creating new instance of User model 
-    const user = new User(userObj)
+    const user = new User(req.body)
 
 
     //save to db
     try {
-        // throw new Error("could not add to DB"); //for testing purpose 
+        // throw new Error("could not add to DB"); //for testing purpose  
         
         await user.save()
         res.send("User added successfully")
