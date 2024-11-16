@@ -67,7 +67,7 @@ app.get('/user',async(req,res)=>{
         
     } catch (error) {
         console.error("Error in finding data in DB: ",error.message);
-        res.send("Error in finding data in DB: "+error.message)
+        res.status(400).send("Something went wrong")
     }
 })
 
@@ -85,10 +85,68 @@ app.get('/feed',async(req,res)=>{
     } catch (error) {
         console.error(error);
         
-        res.send("Error in finding data in DB")
+        res.status(400).send("Something went wrong")
     }
 
 })
+
+app.delete('/user',async(req,res)=>{
+    const userId = req.body.userId
+
+    try {
+        //from documentation we found this
+        // const user = await User.findByIdAndDelete({_id: userId})
+        const user = await User.findByIdAndDelete(userId)
+
+        //Also handle the !user case
+        console.log("User deleted is: \n",user);
+        
+        res.send("User Deleted successfully")
+    } catch (error) {
+        console.error(error);
+        
+        res.status(400).send("Something went wrong")
+    }
+})
+
+app.patch('/user',async (req,res) => {
+    const userId = req.body._id;
+    console.log(userId);
+    
+    const data = req.body;
+    console.log(data);
+    try {
+        // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
+        const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'after'})
+        console.log(user);
+        
+        res.send("User updated successfully")
+    } catch (error) {
+        console.error(error);
+        
+        res.status(400).send("Something went wrong")
+    }
+})
+
+app.put('/user',async (req,res) => {
+    const userId = req.body._id;
+    console.log(userId);
+    
+    const data = req.body;
+    console.log("Data is: ",data);
+    try {
+        // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
+        const user = await User.findByIdAndUpdate(userId, data)
+        console.log(user);
+        
+        res.send("User updated successfully")
+    } catch (error) {
+        console.error(error);
+        
+        res.status(400).send("Something went wrong")
+    }
+})
+
 
 connectDB().then(()=>{
     console.log("DB connection established successfully.....");
