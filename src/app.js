@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const User = require('./models/user')
 const {validateSignUpData}= require('./utils/validation')
 const bcrypt = require('bcrypt')
+const validator = require('validator')
 const app = express();
 
 //gets activated for all my Routes
@@ -13,7 +14,7 @@ app.use(express.json())
 app.post('/signup',async(req,res)=>{
     
     console.log(req.body);
-    const {password} = req.body;
+    const {password,firstName,lastName,emailId} = req.body;
     
     //now req.body is exactly same as userObj
     // const userObj = {
@@ -32,16 +33,18 @@ app.post('/signup',async(req,res)=>{
         validateSignUpData(req)
 
         // Encrypt the passwords
-        // const passwordHash = bcrypt.hash
-        // Testing salt generation
-        bcrypt.genSalt(10,(err,salt)=>{
-            bcrypt.hash(password,salt,(err,hash)=>{
-                console.log("Salt: ",salt);
-            })
-        })
+        const passwordHash = await bcrypt.hash(password,10)
+        //returns a promise as per documentation
+        console.log("passwordHash: ",passwordHash);
+        
 
         //creating new instance of User model 
-        const user = new User(req.body)
+        // const user = new User(req.body) //bad way of creating an instance
+        // Good way is to explicitly mention all the fields
+        const user = new User({
+            firstName,lastName, emailId,password : passwordHash
+        })
+
         console.log("User: ",user);
 
         // throw new Error("could not add to DB"); //for testing purpose  
@@ -51,6 +54,34 @@ app.post('/signup',async(req,res)=>{
         res.send("User added successfully")
     } catch (error) {
         res.status(500).send("Error saving the user: "+ error.message)
+    }
+})
+
+app.post('/login',async (req,res) => {
+    try {
+        const {emailId, password} = req.body
+        //validate email
+        if(!validator.isEmail(emailId)){
+            throw new Error("Enter a valid email id");
+        }
+        //If that emailId is present in DB
+        const user = await User.findOne({emailId: emailId})
+        // console.log("user: ",user);
+        if(!user){
+            throw new Error("Invalid credentials");   
+        }
+        
+
+        const isValidPassword= await bcrypt.compare(password, user.password)
+        console.log("Valid Password: ",isValidPassword);
+        if(isValidPassword){
+            res.send("User login successful!!")
+        }else{
+            throw new Error("Invalid credentials");
+        }
+
+    } catch (error) {
+        res.status(500).send("Error finding the user: "+ error.message)
     }
 })
 
