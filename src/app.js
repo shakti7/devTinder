@@ -112,8 +112,9 @@ app.delete('/user',async(req,res)=>{
     }
 })
 
-app.patch('/user',async (req,res) => {
-    const userId = req.body.userId;
+app.patch('/user/:userId',async (req,res) => {
+    // const userId = req.body.userId;
+    const userId = req.params?.userId
     console.log(userId);
     
     const data = req.body;
@@ -130,9 +131,7 @@ app.patch('/user',async (req,res) => {
         console.log(user);
         console.log("Updated At: ",user.updatedAt);
 
-        const ALLOWED_UPDATES = [
-            "userId","skills","photoUrl","about","gender","age"
-        ]
+        const ALLOWED_UPDATES = ["skills","photoUrl","about","gender","age"]
     
         const isAllowedUpdates = Object.keys(data).every((k)=>{
             return ALLOWED_UPDATES.includes(k)
