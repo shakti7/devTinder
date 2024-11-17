@@ -114,7 +114,7 @@ app.delete('/user',async(req,res)=>{
 
 app.patch('/user/:userId',async (req,res) => {
     // const userId = req.body.userId;
-    const userId = req.params?.userId
+    const userId = req.params.userId
     console.log(userId);
     
     const data = req.body;
@@ -143,9 +143,14 @@ app.patch('/user/:userId',async (req,res) => {
     
         if(!isAllowedUpdates){
             throw new Error("Update not allowed");
-        }else{
-            res.send("User updated successfully")
         }
+
+        if(data?.skills.length > 10){
+            throw new Error("Skills can not be more than 10");
+            
+        }
+        res.send("User updated successfully")
+    
         
     } catch (error) {
         console.error(error);

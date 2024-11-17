@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const validator = require('validator')
 const {Schema, model}=mongoose
 //or u can do mongoose.Schema
 
@@ -17,11 +18,23 @@ const userSchema = new Schema({
         lowercase: true,
         trim: true,
         required: true,
-        unique: true
+        unique: true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Invalid Email Address");
+                
+            }
+        }
     },
     password:{
         type: String,
-        required: true
+        required: true,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Enter a strong passsword: "+value);
+                
+            }
+        }
     },
     age:{
         type: Number,
@@ -38,7 +51,13 @@ const userSchema = new Schema({
     },
     photoUrl: {
         type: String,
-        default: "https://giftolexia.com/wp-content/uploads/2015/11/dummy-profile.png"
+        default: "https://giftolexia.com/wp-content/uploads/2015/11/dummy-profile.png",
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("Invalid Photo URL: "+value);
+                
+            }
+        }
     },
     about: {
         type: String,
