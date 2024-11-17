@@ -23,12 +23,14 @@ app.post('/signup',async(req,res)=>{
     const user = new User(req.body)
     console.log("User: ",user);
     
-
+    
+    
     //save to db
     try {
         // throw new Error("could not add to DB"); //for testing purpose  
         
         await user.save()
+        console.log("Created At: ",user.createdAt);
         res.send("User added successfully")
     } catch (error) {
         res.status(500).send("Error saving the user: "+ error.message)
@@ -111,21 +113,45 @@ app.delete('/user',async(req,res)=>{
 })
 
 app.patch('/user',async (req,res) => {
-    const userId = req.body._id;
+    const userId = req.body.userId;
     console.log(userId);
     
     const data = req.body;
+
+    
+
     console.log(data);
     try {
         // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
-        const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'after'})
+        const user = await User.findByIdAndUpdate(userId, data, {
+            returnDocument: 'after',
+            runValidators: true
+        })
         console.log(user);
+        console.log("Updated At: ",user.updatedAt);
+
+        const ALLOWED_UPDATES = [
+            "userId","skills","photoUrl","about","gender","age"
+        ]
+    
+        const isAllowedUpdates = Object.keys(data).every((k)=>{
+            return ALLOWED_UPDATES.includes(k)
+        })
+        // console.log(Object.keys(data));
         
-        res.send("User updated successfully")
+        console.log(isAllowedUpdates);
+        
+    
+        if(!isAllowedUpdates){
+            throw new Error("Update not allowed");
+        }else{
+            res.send("User updated successfully")
+        }
+        
     } catch (error) {
         console.error(error);
         
-        res.status(400).send("Something went wrong")
+        res.status(400).send("UPDATE FAILED "+error.message)
     }
 })
 
