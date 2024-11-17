@@ -4,16 +4,20 @@ const {Schema, model}=mongoose
 
 const userSchema = new Schema({
     firstName:{
-        type: String
+        type: String,
+        required: true,
     },
     lastName:{
         type: String
     },
     emailId:{
-        type: String
+        type: String,
+        required: true,
+        unique: true,
     },
     password:{
-        type: String
+        type: String,
+        required: true
     },
     age:{
         type: Number
@@ -21,6 +25,16 @@ const userSchema = new Schema({
     gender:{
         type: String
     },
+    photoUrl: {
+        type: String
+    },
+    about: {
+        type: String,
+        default: "This is a default about of the user!"
+    },
+    skills: {
+        type: [String]
+    }
 })
 
 // const User = model('User',userSchema)

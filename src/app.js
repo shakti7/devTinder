@@ -21,7 +21,8 @@ app.post('/signup',async(req,res)=>{
 
     //creating new instance of User model 
     const user = new User(req.body)
-
+    console.log("User: ",user);
+    
 
     //save to db
     try {
@@ -118,25 +119,6 @@ app.patch('/user',async (req,res) => {
     try {
         // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
         const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'after'})
-        console.log(user);
-        
-        res.send("User updated successfully")
-    } catch (error) {
-        console.error(error);
-        
-        res.status(400).send("Something went wrong")
-    }
-})
-
-app.put('/user',async (req,res) => {
-    const userId = req.body._id;
-    console.log(userId);
-    
-    const data = req.body;
-    console.log("Data is: ",data);
-    try {
-        // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
-        const user = await User.findByIdAndUpdate(userId, data)
         console.log(user);
         
         res.send("User updated successfully")
