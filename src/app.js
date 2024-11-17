@@ -2,6 +2,8 @@ const express = require('express');
 const {connectDB} = require('./config/database');
 const mongoose = require('mongoose');
 const User = require('./models/user')
+const {validateSignUpData}= require('./utils/validation')
+const bcrypt = require('bcrypt')
 const app = express();
 
 //gets activated for all my Routes
@@ -9,7 +11,9 @@ app.use(express.json())
 
 // POST API to signup user
 app.post('/signup',async(req,res)=>{
+    
     console.log(req.body);
+    const {password} = req.body;
     
     //now req.body is exactly same as userObj
     // const userObj = {
@@ -19,14 +23,27 @@ app.post('/signup',async(req,res)=>{
     //     password: "sachin@123",
     // }
 
-    //creating new instance of User model 
-    const user = new User(req.body)
-    console.log("User: ",user);
     
     
     
     //save to db
     try {
+        // Validation of data
+        validateSignUpData(req)
+
+        // Encrypt the passwords
+        // const passwordHash = bcrypt.hash
+        // Testing salt generation
+        bcrypt.genSalt(10,(err,salt)=>{
+            bcrypt.hash(password,salt,(err,hash)=>{
+                console.log("Salt: ",salt);
+            })
+        })
+
+        //creating new instance of User model 
+        const user = new User(req.body)
+        console.log("User: ",user);
+
         // throw new Error("could not add to DB"); //for testing purpose  
         
         await user.save()
