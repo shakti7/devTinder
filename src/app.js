@@ -5,10 +5,16 @@ const User = require('./models/user')
 const {validateSignUpData}= require('./utils/validation')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken');
+const user = require('./models/user');
+const {userAuth} = require('./middlewares/auth')
 const app = express();
 
 //gets activated for all my Routes
 app.use(express.json())
+app.use(cookieParser())
+
 
 // POST API to signup user
 app.post('/signup',async(req,res)=>{
@@ -51,10 +57,29 @@ app.post('/signup',async(req,res)=>{
         
         await user.save()
         console.log("Created At: ",user.createdAt);
+        // console.log(user._id);
+    
         res.send("User added successfully")
     } catch (error) {
         res.status(500).send("Error saving the user: "+ error.message)
     }
+})
+
+app.get('/profile',userAuth,async(req,res)=>{
+    try{
+        // console.log(req.cookies);
+        // console.log(req.signedCookies);
+        const user = req.user
+        // console.log("user: ",user);
+                
+
+        res.send(user)
+    }catch (error) {
+        console.error(error);
+        
+        res.status(400).send("Unauthorized user")
+    }
+    
 })
 
 app.post('/login',async (req,res) => {
@@ -75,6 +100,8 @@ app.post('/login',async (req,res) => {
         const isValidPassword= await bcrypt.compare(password, user.password)
         console.log("Valid Password: ",isValidPassword);
         if(isValidPassword){
+            const token =await jwt.sign({"userId":user._id},"DevTinder@69")
+            res.cookie('token',token)
             res.send("User login successful!!")
         }else{
             throw new Error("Invalid credentials");
@@ -162,7 +189,7 @@ app.delete('/user',async(req,res)=>{
 
 app.patch('/user/:userId',async (req,res) => {
     // const userId = req.body.userId;
-    const userId = req.params.userId
+    const userId = req.params?.userId
     console.log(userId);
     
     const data = req.body;
@@ -171,13 +198,7 @@ app.patch('/user/:userId',async (req,res) => {
 
     console.log(data);
     try {
-        // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
-        const user = await User.findByIdAndUpdate(userId, data, {
-            returnDocument: 'after',
-            runValidators: true
-        })
-        console.log(user);
-        console.log("Updated At: ",user.updatedAt);
+        
 
         const ALLOWED_UPDATES = ["skills","photoUrl","about","gender","age"]
     
@@ -197,6 +218,17 @@ app.patch('/user/:userId',async (req,res) => {
             throw new Error("Skills can not be more than 10");
             
         }
+
+        // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
+        const user = await User.findByIdAndUpdate(userId, data, {
+            returnDocument: 'after',
+            runValidators: true
+        })
+        console.log(user);
+        if(!user){
+            throw new Error("User not Found");
+        }
+        console.log("Updated At: ",user.updatedAt);
         res.send("User updated successfully")
     
         

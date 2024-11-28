@@ -61,7 +61,7 @@ const userSchema = new Schema({
     },
     about: {
         type: String,
-        default: "This is a default about of the user!"
+        default: "This is a default about the user!"
     },
     skills: {
         type: [String]
