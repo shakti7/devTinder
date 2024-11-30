@@ -97,11 +97,13 @@ app.post('/login',async (req,res) => {
         }
         
 
-        const isValidPassword= await bcrypt.compare(password, user.password)
+        const isValidPassword= await user.validatePassword(password)
         console.log("Valid Password: ",isValidPassword);
         if(isValidPassword){
-            const token =await jwt.sign({"userId":user._id},"DevTinder@69")
-            res.cookie('token',token)
+            const token =await user.getJWT()
+            // console.log("Token inside /login: ",token);
+            
+            res.cookie('token',token,{expires:new Date(Date.now() + 8*3600000)})
             res.send("User login successful!!")
         }else{
             throw new Error("Invalid credentials");
@@ -112,133 +114,13 @@ app.post('/login',async (req,res) => {
     }
 })
 
-app.get('/user',async(req,res)=>{
-    const email =req.body.emailId
+app.post('/sendConnectionRequest',userAuth,async (req,res,next) => {
+    const {firstName} = req.user
+    
+    console.log("Sending a connection request");
 
-    try {
-        // To find one user & this does not return an array
-        // finds the 1st doc found as per entry by default but it can be modified using sort
-        // const user = await User.findOne({emailId: email})
-        const user = await User.findOne({emailId: email},'firstName lastName')
-        // const user = await User.findOne({})
-        // user={}
-        console.log(user);
-        console.log(user === null);
-        
-        // console.log(Object.keys(user).length);
-        
-        if(!user || Object.keys(user).length === 0){
-            res.status(404).send("User not found")
-        }else{
-            res.send(user)
-        }
-        
-        // // await Adventure.findOne({ country: 'Croatia' }).exec();
-        // //users is an array
-        // const users =  await User.find({emailId: email}).exec()
-        // //If you query for something that is not there
-        // if(users.length === 0){
-        //     res.status(404).send("User not found")
-        // }else{
-        //     res.send(users)
-        // }
-        
-    } catch (error) {
-        console.error("Error in finding data in DB: ",error.message);
-        res.status(400).send("Something went wrong")
-    }
+    res.send(`${firstName } sent Connection request !!!`)
 })
-
-app.get('/feed',async(req,res)=>{
-
-    try {
-        const users= await User.find({})
-        // for testing the if block make sure to change const to let
-        // users=[]
-        if(users.length === 0 ){
-            res.status(404).send("No user found in your area")
-        }else{
-            res.send(users)
-        }
-    } catch (error) {
-        console.error(error);
-        
-        res.status(400).send("Something went wrong")
-    }
-
-})
-
-app.delete('/user',async(req,res)=>{
-    const userId = req.body.userId
-
-    try {
-        //from documentation we found this
-        // const user = await User.findByIdAndDelete({_id: userId})
-        const user = await User.findByIdAndDelete(userId)
-
-        //Also handle the !user case
-        console.log("User deleted is: \n",user);
-        
-        res.send("User Deleted successfully")
-    } catch (error) {
-        console.error(error);
-        
-        res.status(400).send("Something went wrong")
-    }
-})
-
-app.patch('/user/:userId',async (req,res) => {
-    // const userId = req.body.userId;
-    const userId = req.params?.userId
-    console.log(userId);
-    
-    const data = req.body;
-
-    
-
-    console.log(data);
-    try {
-        
-
-        const ALLOWED_UPDATES = ["skills","photoUrl","about","gender","age"]
-    
-        const isAllowedUpdates = Object.keys(data).every((k)=>{
-            return ALLOWED_UPDATES.includes(k)
-        })
-        // console.log(Object.keys(data));
-        
-        console.log(isAllowedUpdates);
-        
-    
-        if(!isAllowedUpdates){
-            throw new Error("Update not allowed");
-        }
-
-        if(data?.skills.length > 10){
-            throw new Error("Skills can not be more than 10");
-            
-        }
-
-        // const user = await User.findByIdAndUpdate(userId, data, {returnDocument: 'before'})
-        const user = await User.findByIdAndUpdate(userId, data, {
-            returnDocument: 'after',
-            runValidators: true
-        })
-        console.log(user);
-        if(!user){
-            throw new Error("User not Found");
-        }
-        console.log("Updated At: ",user.updatedAt);
-        res.send("User updated successfully")
-    
-        
-    } catch (error) {
-        console.error(error);
-        
-        res.status(400).send("UPDATE FAILED "+error.message)
-    }
-})
-
 
 connectDB().then(()=>{
     console.log("DB connection established successfully.....");
