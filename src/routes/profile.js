@@ -2,6 +2,7 @@ const express = require("express");
 const validator = require('validator')
 const {userAuth} = require("../middlewares/auth");
 const { validateProfileEdit } = require("../utils/validation");
+const bcrypt = require('bcrypt')
 
 const profileRouter = express.Router();
 
@@ -81,5 +82,57 @@ profileRouter.patch('/profile/edit',userAuth,async (req,res) => {
     }    
 })
 
+profileRouter.patch('/profile/password',userAuth,async (req,res) => {
+    try {
+        const loggedInUser = req.user;
+        if(Object.keys(req.body).length ===0){
+            throw new Error("Provide the new password");
+        }
+        const isValidField =Object.keys(req.body).every((key)=>["password"].includes(key))  
+        // console.log(isValidField);
+        if(!isValidField){
+            throw new Error("Invalid entries found!!! Please provide new password only..");
+            
+        }
+        const {password} = req.body
+        const maxLength =64
+        const minLength = 8
+
+        if(password.length < minLength || password.length>maxLength){
+            throw new Error(`Password should be between ${minLength} and ${maxLength} characters`);
+        }
+        
+        if(!validator.isStrongPassword(password)){
+            throw new Error("Enter a strong password");
+        }
+        // console.log(validator.isStrongPassword(password));
+        //old pw: $2b$10$F6bOycU.p.VBxoHG03McAOWVDKH537qH8zayWMf59mIRCX1YsqQ4G
+        
+        //new pw: $2b$10$4l3PCb5mTXNCz9HrnBsXruBE13bM5ITaBJkJgxEyMsqEiDE0EAw1u
+        const checkPrevPassword = await bcrypt.compare(password,loggedInUser.password)
+        // console.log(checkPrevPassword);
+        if(checkPrevPassword){
+            return res.status(400).json({
+                message: "New password must be different from the current password."
+            })
+        }
+
+        
+        const hashedPassword = await bcrypt.hash(password,10);
+
+        
+        // console.log(hashedPassword);
+        loggedInUser.password = hashedPassword
+
+        await loggedInUser.save();
+
+        // console.log(loggedInUser);
+        
+        res.json({message: "Password changed successfully!!!"})
+                 
+    } catch (error) {
+        res.status(400).send("Error: "+error.message)
+    }
+})
 
 module.exports = profileRouter
