@@ -1,4 +1,5 @@
 const validator = require('validator')
+const User = require('../models/user')
 
 const validateSignUpData = (req) =>{
     const {firstName, lastName, password, emailId} = req.body;
@@ -28,4 +29,22 @@ const validateProfileEdit =(req)=>{
     return isValidField
 }
 
-module.exports={validateSignUpData,validateProfileEdit}
+const validateSendRequest =async(req)=>{
+    const allowedStatus = ["interested","ignored"]
+    const toUserId = req.params.toUserId
+    const status = req.params.status
+    
+    
+    if(!allowedStatus.includes(status)){
+        throw new Error("Invalid status");
+    }
+    
+    const user = await User.findById(toUserId)
+    // console.log(user);
+    
+    if(!user){
+        throw new Error("User not found");
+    }
+}
+
+module.exports={validateSignUpData,validateProfileEdit,validateSendRequest}

@@ -67,6 +67,11 @@ profileRouter.patch('/profile/edit',userAuth,async (req,res) => {
         // console.log(loggedInUser);
         
         // loggedInUser.age = age //Bad Practice
+        // Object.keys(req.body).forEach((key)=>{
+        //     console.log(req.body[key]);
+            
+        // })
+
         Object.keys(req.body).forEach((key)=> loggedInUser[key] = req.body[key])
         console.log(loggedInUser);
         

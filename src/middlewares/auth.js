@@ -23,6 +23,7 @@ const userAuth = async(req,res,next)=>{
             throw new Error("Token not found");
         
         const isValidToken = await jwt.verify(token,"DevTinder@69")
+        // console.log("isValidToken: ",isValidToken);
             
 
         const {userId} = isValidToken;

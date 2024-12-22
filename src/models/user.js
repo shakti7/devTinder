@@ -45,10 +45,14 @@ const userSchema = new Schema({
     gender:{
         type: String,
         trim:true,
-        validate(value){
-            if(!["male","female","others"].includes(value.toLowerCase())){
-                throw new Error("Gender data is not valid");
-            }
+        // validate(value){
+        //     if(!["male","female","others"].includes(value.toLowerCase())){
+        //         throw new Error("Gender data is not valid");
+        //     }
+        // },
+        enum:{
+            values: ['male','female','others'],
+            message: `Invalid Gender: {VALUE}`
         }
     },
     photoUrl: {

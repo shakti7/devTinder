@@ -9,7 +9,7 @@ const authRouter = express.Router()
 //POST api to signup the user
 authRouter.post('/signup',async(req,res)=>{
     
-    console.log(req.body);
+    // console.log(req.body);
     const {password,firstName,lastName,emailId} = req.body;
     
     //now req.body is exactly same as userObj
@@ -71,7 +71,7 @@ authRouter.post('/login',async (req,res) => {
         
 
         const isValidPassword= await user.validatePassword(password)
-        console.log("Valid Password: ",isValidPassword);
+        // console.log("Valid Password: ",isValidPassword);
         if(isValidPassword){
             const token =await user.getJWT()
             // console.log("Token inside /login: ",token);
