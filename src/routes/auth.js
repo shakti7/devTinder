@@ -31,7 +31,7 @@ authRouter.post('/signup',async(req,res)=>{
         // Encrypt the passwords
         const passwordHash = await bcrypt.hash(password,10)
         //returns a promise as per documentation
-        console.log("passwordHash: ",passwordHash);
+        // console.log("passwordHash: ",passwordHash);
         
 
         //creating new instance of User model 

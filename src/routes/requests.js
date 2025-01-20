@@ -33,7 +33,7 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async (req,res) =>
         
         const data= await connect.save()
         let message;
-        message= (status == 'interested')? `${req.user.firstName} is ${status} in ${toUser.firstName}` :
+        message= (status === 'interested')? `${req.user.firstName} is ${status} in ${toUser.firstName}` :
         `${req.user.firstName} ${status} ${toUser.firstName}`
 
         res.json({
