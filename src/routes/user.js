@@ -82,6 +82,8 @@ userRouter.get('/feed',userAuth,async(req,res)=>{
             $and:[
 
                 {_id: {$nin: [...hideFromUser]}},
+
+                //we are adding this case where we don't have any connections previously then in that case our set will be empty so it won't contain loggedInUser thats why to handle this case we'll exclude loggedInUser
                 {_id: {$ne: loggedInUser}}
             ]
         }).select(USER_SAFE_DATA)
