@@ -60,4 +60,41 @@ userRouter.get('/user/connections',userAuth,async(req,res)=>{
     }
 })
 
+userRouter.get('/feed',userAuth,async(req,res)=>{
+    try {
+        const user = req.user;
+        const loggedInUser = user._id
+        const feedReq = await ConnectionRequest.find({
+            $or:[{fromUserId: loggedInUser},{toUserId:loggedInUser}]
+        }).select("fromUserId toUserId").populate("fromUserId","firstName")
+        .populate("toUserId","firstName" )
+        // console.log(feedReq);
+
+        const hideFromUser = new Set()
+        feedReq.forEach((val)=> {
+            hideFromUser.add(val.fromUserId._id.toString())
+            hideFromUser.add(val.toUserId._id.toString())
+        })
+        // console.log(hideFromUser);
+        
+
+        const showUser = await User.find({
+            $and:[
+
+                {_id: {$nin: [...hideFromUser]}},
+                {_id: {$ne: loggedInUser}}
+            ]
+        }).select(USER_SAFE_DATA)
+
+        // console.log(showUser);
+        
+        res.json({message:"Data Fetched",
+            data: showUser
+        })
+        
+    } catch (error) {
+        res.status(400).json({message: error.message})
+    }
+})
+
 module.exports = userRouter
